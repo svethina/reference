@@ -6,7 +6,15 @@ const ACTIONS = [
   { id: "summary", label: "О чем статья?" },
   { id: "theses", label: "Тезисы" },
   { id: "telegram", label: "Пост для Telegram" },
+  { id: "translate", label: "Перевод" },
 ];
+
+const LOADING_LABELS = {
+  summary: "Обработка статьи…",
+  theses: "Обработка статьи…",
+  telegram: "Обработка статьи…",
+  translate: "Перевод статьи…",
+};
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -39,7 +47,12 @@ export default function Home() {
       }
 
       const data = await response.json();
-      setResult(JSON.stringify(data, null, 2));
+
+      if (typeof data.result === "string") {
+        setResult(data.result);
+      } else {
+        setResult(JSON.stringify(data, null, 2));
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -105,7 +118,7 @@ export default function Home() {
             {loading ? (
               <div className="flex items-center gap-2 text-sm text-slate-600">
                 <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-sky-600" />
-                Парсинг статьи…
+                {LOADING_LABELS[activeAction] || "Обработка…"}
               </div>
             ) : result ? (
               <pre className="overflow-x-auto whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-800">
