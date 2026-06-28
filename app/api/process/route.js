@@ -1,7 +1,7 @@
 import { parseArticle } from "@/lib/parseArticle";
-import { translateArticle } from "@/lib/translateArticle";
+import { processArticle } from "@/lib/aiArticle";
 
-const VALID_ACTIONS = ["summary", "theses", "telegram", "translate"];
+const VALID_ACTIONS = ["summary", "theses", "telegram"];
 
 export async function POST(request) {
   const { url, action } = await request.json();
@@ -38,13 +38,8 @@ export async function POST(request) {
       );
     }
 
-    if (action === "translate") {
-      const translation = await translateArticle(article);
-      return Response.json({ result: translation });
-    }
-
-    // AI-обработка по action будет добавлена позже
-    return Response.json(article);
+    const result = await processArticle(article, action);
+    return Response.json({ result });
   } catch (err) {
     return Response.json(
       { error: err.message || "Ошибка при обработке статьи" },
